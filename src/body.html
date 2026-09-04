@@ -11,7 +11,7 @@
 <div id="dlg" class="dlg" hidden>
   <div class="dlg-box">
     <h3>⚙️ Cài đặt</h3>
-    <div class="set"><span>Giọng tiếng Anh</span><div class="seg" data-k="voice"><button data-v="emma">Cô Emma</button><button data-v="aria">Cô Aria</button><button data-v="ana">Bạn Ana</button></div></div>
+    <div class="set"><span>Giọng tiếng Anh</span><div class="seg" data-k="voice"><button data-v="matilda">Cô Matilda</button><button data-v="aria">Cô Aria</button><button data-v="ana">Bạn Ana</button></div></div>
     <div class="set"><span>Tốc độ đọc</span><div class="seg" data-k="rate"><button data-v="0.75">Chậm</button><button data-v="0.9">Vừa</button><button data-v="1.05">Nhanh</button></div></div>
     <div class="dlg-actions"><button class="chunky" id="tryVoice">🔊 Nghe thử</button><button class="chunky primary" id="closeDlg">Xong</button></div>
   </div>
@@ -28,31 +28,31 @@
 
   /* ---------- data ---------- */
   const TOPICS = [
-    { id: 'animals', en: 'Animals', vi: 'Động vật', icon: '🐶', cover: 'dog', c: 'var(--grass)', words: [
+    { id: 'animals', en: 'Animals', vi: 'Động vật', icon: '🐶', cover: 'dog', c: 'var(--animals)', words: [
       ['dog', '🐶', 'con chó'], ['cat', '🐱', 'con mèo'], ['cow', '🐮', 'con bò'], ['pig', '🐷', 'con heo'],
       ['duck', '🦆', 'con vịt'], ['fish', '🐟', 'con cá'], ['bird', '🐦', 'con chim'], ['elephant', '🐘', 'con voi'],
       ['lion', '🦁', 'sư tử'], ['monkey', '🐵', 'con khỉ'], ['rabbit', '🐰', 'con thỏ'], ['frog', '🐸', 'con ếch']] },
-    { id: 'fruits', en: 'Fruits', vi: 'Trái cây', icon: '🍎', cover: 'apple', c: 'var(--red)', words: [
+    { id: 'fruits', en: 'Fruits', vi: 'Trái cây', icon: '🍎', cover: 'apple', c: 'var(--fruits)', words: [
       ['apple', '🍎', 'quả táo'], ['banana', '🍌', 'quả chuối'], ['orange', '🍊', 'quả cam'], ['grapes', '🍇', 'chùm nho'],
       ['watermelon', '🍉', 'dưa hấu'], ['strawberry', '🍓', 'dâu tây'], ['pineapple', '🍍', 'quả dứa'], ['mango', '🥭', 'quả xoài'],
       ['pear', '🍐', 'quả lê'], ['cherry', '🍒', 'quả anh đào']] },
-    { id: 'colors', en: 'Colors', vi: 'Màu sắc', icon: '🎨', c: 'var(--grape)', kind: 'color', words: [
+    { id: 'colors', en: 'Colors', vi: 'Màu sắc', icon: '🎨', c: 'var(--colors)', kind: 'color', words: [
       ['red', '#FF3B30', 'màu đỏ'], ['blue', '#1E7CF5', 'màu xanh dương'], ['yellow', '#FFD60A', 'màu vàng'], ['green', '#34C759', 'màu xanh lá'],
       ['orange', '#FF9500', 'màu cam'], ['purple', '#9B59F5', 'màu tím'], ['pink', '#FF6FB5', 'màu hồng'], ['brown', '#8B5A2B', 'màu nâu'],
       ['black', '#1C1C1E', 'màu đen'], ['white', '#FFFFFF', 'màu trắng']] },
-    { id: 'numbers', en: 'Numbers', vi: 'Số đếm', icon: '🔢', c: 'var(--sky)', kind: 'num', words: [
+    { id: 'numbers', en: 'Numbers', vi: 'Số đếm', icon: '🔢', c: 'var(--numbers)', kind: 'num', words: [
       ['one', 1, 'số một'], ['two', 2, 'số hai'], ['three', 3, 'số ba'], ['four', 4, 'số bốn'], ['five', 5, 'số năm'],
       ['six', 6, 'số sáu'], ['seven', 7, 'số bảy'], ['eight', 8, 'số tám'], ['nine', 9, 'số chín'], ['ten', 10, 'số mười']] },
-    { id: 'body', en: 'My Body', vi: 'Cơ thể', icon: '👋', cover: 'hand', c: 'var(--tangerine)', words: [
+    { id: 'body', en: 'My Body', vi: 'Cơ thể', icon: '👋', cover: 'hand', c: 'var(--body)', words: [
       ['eye', '👁️', 'mắt'], ['nose', '👃', 'mũi'], ['mouth', '👄', 'miệng'], ['ear', '👂', 'tai'], ['hand', '✋', 'bàn tay'],
       ['foot', '🦶', 'bàn chân'], ['tooth', '🦷', 'răng'], ['leg', '🦵', 'chân'], ['tongue', '👅', 'lưỡi'], ['arm', '💪', 'cánh tay']] },
-    { id: 'family', en: 'Family', vi: 'Gia đình', icon: '👨‍👩‍👧', cover: 'baby', c: 'var(--pink)', words: [
+    { id: 'family', en: 'Family', vi: 'Gia đình', icon: '👨‍👩‍👧', cover: 'baby', c: 'var(--family)', words: [
       ['mommy', '👩', 'mẹ'], ['daddy', '👨', 'bố'], ['baby', '👶', 'em bé'], ['grandma', '👵', 'bà'], ['grandpa', '👴', 'ông'],
       ['sister', '👧', 'chị / em gái'], ['brother', '👦', 'anh / em trai']] },
-    { id: 'vehicles', en: 'Vehicles', vi: 'Xe cộ', icon: '🚗', cover: 'car', c: 'var(--teal)', words: [
+    { id: 'vehicles', en: 'Vehicles', vi: 'Xe cộ', icon: '🚗', cover: 'car', c: 'var(--vehicles)', words: [
       ['car', '🚗', 'ô tô'], ['bus', '🚌', 'xe buýt'], ['bike', '🚲', 'xe đạp'], ['train', '🚆', 'tàu hỏa'], ['plane', '✈️', 'máy bay'],
       ['boat', '⛵', 'thuyền'], ['truck', '🚚', 'xe tải'], ['rocket', '🚀', 'tên lửa'], ['motorbike', '🏍️', 'xe máy']] },
-    { id: 'things', en: 'Things', vi: 'Đồ vật', icon: '🧸', cover: 'teddy bear', c: 'var(--sun)', tc: '#2B2350', words: [
+    { id: 'things', en: 'Things', vi: 'Đồ vật', icon: '🧸', cover: 'teddy bear', c: 'var(--things)', words: [
       ['ball', '⚽', 'quả bóng'], ['book', '📖', 'quyển sách'], ['hat', '🎩', 'cái mũ'], ['shoes', '👟', 'đôi giày'], ['bed', '🛏️', 'cái giường'],
       ['chair', '🪑', 'cái ghế'], ['clock', '⏰', 'đồng hồ'], ['umbrella', '☂️', 'cái ô'], ['bag', '🎒', 'cái cặp'], ['teddy bear', '🧸', 'gấu bông']] }
   ];
@@ -71,7 +71,7 @@
   const screen = $('#screen'), titleEl = $('#title'), backBtn = $('#back'), starCount = $('#starCount'), starBox = $('#starBox');
 
   /* ---------- cài đặt (lưu trên máy) ---------- */
-  const cfg = { voice: 'emma', rate: 0.9 };
+  const cfg = { voice: 'matilda', rate: 0.9 };
   try { Object.assign(cfg, JSON.parse(localStorage.getItem('bhta_cfg') || '{}')); } catch (e) {}
   function saveCfg() { try { localStorage.setItem('bhta_cfg', JSON.stringify(cfg)); } catch (e) {} }
 
@@ -229,9 +229,10 @@
   /* ---------- home ---------- */
   function renderHome() {
     state.topic = null;
-    setHeader('Bé học tiếng Anh', false);
+    setHeader('', false);
     screen.innerHTML = '<section class="screen">' +
-      '<p class="hello">Bé chạm vào chủ đề để bắt đầu 👇</p>' +
+      '<div class="hero"><div class="mascot"><img src="' + asset('img/dog.webp') + '" alt="" draggable="false"></div>' +
+        '<div class="htxt"><b>Chào bé! 👋</b><span>Hôm nay mình học gì nào?</span></div></div>' +
       '<div class="topics">' + TOPICS.map((t, i) =>
         '<button class="chunky topic" data-i="' + i + '" style="--c:' + t.c + (t.tc ? ';--tc:' + t.tc : '') + '">' +
         (t.cover ? '<span class="pic" data-emoji="' + t.icon + '"><img src="' + asset('img/' + fileKey(t.cover) + '.webp') + '" alt="" draggable="false"></span>'
