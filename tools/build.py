@@ -71,7 +71,7 @@ wr("index.html", wrap(PWA_HEAD, head, body))
 
 # ---------- service worker: precache toàn bộ ----------
 files = ["./", "index.html", "manifest.webmanifest"]
-for pat in ("img/*.webp", "audio/*.mp3", "icons/*.png"):
+for pat in ("img/*.webp", "audio/*/*.mp3", "icons/*.png"):
     files += sorted(p.replace(ROOT + os.sep, "").replace("\\", "/") for p in glob.glob(os.path.join(ROOT, pat)))
 h = hashlib.md5()
 for f in files:
@@ -102,7 +102,7 @@ wr("sw.js", sw)
 
 # ---------- bundle: nhúng ảnh + mp3 ----------
 assets = {}
-for pat, mime in (("img/*.webp", "image/webp"), ("audio/*.mp3", "audio/mpeg")):
+for pat, mime in (("img/*.webp", "image/webp"), ("audio/*/*.mp3", "audio/mpeg")):
     for p in sorted(glob.glob(os.path.join(ROOT, pat))):
         rel = p.replace(ROOT + os.sep, "").replace("\\", "/")
         assets[rel] = "data:%s;base64,%s" % (mime, base64.b64encode(open(p, "rb").read()).decode())

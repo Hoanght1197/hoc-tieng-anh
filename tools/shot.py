@@ -18,6 +18,8 @@ async def main():
         await pg.click(".mode[data-mode=memory]"); await asyncio.sleep(1.2)
         await pg.click(".mcard >> nth=0"); await asyncio.sleep(1)
         await pg.screenshot(path="dist/shot_memory.png")
+        await pg.click("#gear"); await asyncio.sleep(0.8)
+        await pg.screenshot(path="dist/shot_settings.png")
         await pg.close()
         print("shots ok")
 asyncio.run(main())
