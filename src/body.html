@@ -498,7 +498,18 @@
     const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
     const httpOk = /^https?:$/.test(location.protocol) && !ASSETS;
     if ('serviceWorker' in navigator && httpOk) {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
+      const hadSW = !!navigator.serviceWorker.controller;
+      navigator.serviceWorker.register('sw.js').then(reg => {
+        // mỗi lần mở app hoặc quay lại app thì kiểm tra bản mới
+        const check = () => { try { reg.update(); } catch (e) {} };
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
+        setTimeout(check, 3000);
+      }).catch(() => {});
+      // bản mới đã cài xong -> tải lại trang để dùng ngay (chỉ khi trước đó đã có bản cũ, không tải lại ở lần mở đầu)
+      let reloaded = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (hadSW && !reloaded) { reloaded = true; location.reload(); }
+      });
     }
     const tip = $('#installTip');
     if (!standalone && isIOS && !localStorage.getItem('bhta_tip')) {
