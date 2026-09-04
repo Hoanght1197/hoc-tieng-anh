@@ -8,7 +8,7 @@ import edge_tts
 sys.stdout.reconfigure(encoding="utf-8")
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 AUDIO = os.path.join(ROOT, "audio")
-VOICES = {"aria": "en-US-AriaNeural", "ana": "en-US-AnaNeural"}
+VOICES = {"emma": "en-US-EmmaMultilingualNeural", "aria": "en-US-AriaNeural", "ana": "en-US-AnaNeural"}
 VI_VOICE = "vi-VN-HoaiMyNeural"
 words = json.load(open(os.path.join(ROOT, "tools", "words.json"), encoding="utf-8"))
 key = lambda s: s.replace(" ", "_")

@@ -11,7 +11,7 @@
 <div id="dlg" class="dlg" hidden>
   <div class="dlg-box">
     <h3>⚙️ Cài đặt</h3>
-    <div class="set"><span>Giọng tiếng Anh</span><div class="seg" data-k="voice"><button data-v="aria">Cô Aria</button><button data-v="ana">Bạn Ana</button></div></div>
+    <div class="set"><span>Giọng tiếng Anh</span><div class="seg" data-k="voice"><button data-v="emma">Cô Emma</button><button data-v="aria">Cô Aria</button><button data-v="ana">Bạn Ana</button></div></div>
     <div class="set"><span>Tốc độ đọc</span><div class="seg" data-k="rate"><button data-v="0.75">Chậm</button><button data-v="0.9">Vừa</button><button data-v="1.05">Nhanh</button></div></div>
     <div class="dlg-actions"><button class="chunky" id="tryVoice">🔊 Nghe thử</button><button class="chunky primary" id="closeDlg">Xong</button></div>
   </div>
@@ -71,7 +71,7 @@
   const screen = $('#screen'), titleEl = $('#title'), backBtn = $('#back'), starCount = $('#starCount'), starBox = $('#starBox');
 
   /* ---------- cài đặt (lưu trên máy) ---------- */
-  const cfg = { voice: 'aria', rate: 0.9 };
+  const cfg = { voice: 'emma', rate: 0.9 };
   try { Object.assign(cfg, JSON.parse(localStorage.getItem('bhta_cfg') || '{}')); } catch (e) {}
   function saveCfg() { try { localStorage.setItem('bhta_cfg', JSON.stringify(cfg)); } catch (e) {} }
 
