@@ -308,6 +308,8 @@
   const cfg = { voice: 'matilda', rate: 0.9 };
   try { Object.assign(cfg, JSON.parse(localStorage.getItem('bhta_cfg') || '{}')); } catch (e) {}
   function saveCfg() { try { localStorage.setItem('bhta_cfg', JSON.stringify(cfg)); } catch (e) {} }
+  const VOICE_IDS = ['matilda', 'aria', 'ana'];
+  if (!VOICE_IDS.includes(cfg.voice)) { cfg.voice = 'matilda'; saveCfg(); }  // giọng cũ đã gỡ -> về mặc định, tránh đọc bằng giọng máy
 
   /* ---------- audio: mp3 giọng neural, phát nối tiếp, câu mới luôn cắt câu cũ ---------- */
   const player = new Audio();
