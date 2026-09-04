@@ -1,0 +1,10 @@
+{
+ "animals":  [["dog","con chó"],["cat","con mèo"],["cow","con bò"],["pig","con heo"],["duck","con vịt"],["fish","con cá"],["bird","con chim"],["elephant","con voi"],["lion","sư tử"],["monkey","con khỉ"],["rabbit","con thỏ"],["frog","con ếch"]],
+ "fruits":   [["apple","quả táo"],["banana","quả chuối"],["orange","quả cam"],["grapes","chùm nho"],["watermelon","dưa hấu"],["strawberry","dâu tây"],["pineapple","quả dứa"],["mango","quả xoài"],["pear","quả lê"],["cherry","quả anh đào"]],
+ "colors":   [["red","màu đỏ"],["blue","màu xanh dương"],["yellow","màu vàng"],["green","màu xanh lá"],["orange","màu cam"],["purple","màu tím"],["pink","màu hồng"],["brown","màu nâu"],["black","màu đen"],["white","màu trắng"]],
+ "numbers":  [["one","số một"],["two","số hai"],["three","số ba"],["four","số bốn"],["five","số năm"],["six","số sáu"],["seven","số bảy"],["eight","số tám"],["nine","số chín"],["ten","số mười"]],
+ "body":     [["eye","mắt"],["nose","mũi"],["mouth","miệng"],["ear","tai"],["hand","bàn tay"],["foot","bàn chân"],["tooth","răng"],["leg","chân"],["tongue","lưỡi"],["arm","cánh tay"]],
+ "family":   [["mommy","mẹ"],["daddy","bố"],["baby","em bé"],["grandma","bà"],["grandpa","ông"],["sister","chị / em gái"],["brother","anh / em trai"]],
+ "vehicles": [["car","ô tô"],["bus","xe buýt"],["bike","xe đạp"],["train","tàu hỏa"],["plane","máy bay"],["boat","thuyền"],["truck","xe tải"],["rocket","tên lửa"],["motorbike","xe máy"]],
+ "things":   [["ball","quả bóng"],["book","quyển sách"],["hat","cái mũ"],["shoes","đôi giày"],["bed","cái giường"],["chair","cái ghế"],["clock","đồng hồ"],["umbrella","cái ô"],["bag","cái cặp"],["teddy bear","gấu bông"]]
+}

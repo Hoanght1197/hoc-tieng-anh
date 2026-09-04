@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#FF5A3C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Tiếng Anh">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<title>Bé Học Tiếng Anh</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap">
+<style>
+  :root {
+    --paper: #FFF6D6; --paper-2: #FFE7A3; --card: #FFFFFF; --ink: #2B2350; --ink-soft: #6E679A;
+    --line: rgba(43, 35, 80, .14); --shadow: rgba(43, 35, 80, .18);
+    --red: #FF5A3C; --sky: #3FA9F5; --grass: #4CBF63; --grape: #9B6BF2; --sun: #FFC529; --pink: #FF7EB6; --teal: #2FBFB3; --tangerine: #FF9F1C;
+    --good: #4CBF63; --bad: #FF5A3C; --star: #FFB300;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1B1741; --paper-2: #26205A; --card: #2E2766; --ink: #FFF4D6; --ink-soft: #B8B1DE;
+      --line: rgba(255, 244, 214, .16); --shadow: rgba(0, 0, 0, .4); color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1B1741; --paper-2: #26205A; --card: #2E2766; --ink: #FFF4D6; --ink-soft: #B8B1DE;
+    --line: rgba(255, 244, 214, .16); --shadow: rgba(0, 0, 0, .4); color-scheme: dark;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--paper);
+    background-image: radial-gradient(circle at 12% 8%, var(--paper-2) 0 90px, transparent 91px),
+                      radial-gradient(circle at 88% 92%, var(--paper-2) 0 120px, transparent 121px);
+    color: var(--ink); font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif; font-weight: 700;
+    overflow: hidden; user-select: none; -webkit-user-select: none; touch-action: manipulation;
+    -webkit-touch-callout: none;
+  }
+  button { font-family: inherit; color: inherit; }
+  button:focus-visible { outline: 4px solid var(--sky); outline-offset: 3px; }
+  img { pointer-events: none; -webkit-user-drag: none; }
+
+  #app { height: 100vh; height: 100dvh; max-width: 760px; margin: 0 auto; display: flex; flex-direction: column;
+    padding: calc(10px + env(safe-area-inset-top)) 14px calc(12px + env(safe-area-inset-bottom)); gap: 10px; }
+
+  .top { display: grid; grid-template-columns: 56px 1fr auto; align-items: center; gap: 10px; }
+  .title { font-family: 'Fredoka', 'Nunito', sans-serif; font-weight: 700; font-size: clamp(22px, 5vw, 30px); text-align: center; letter-spacing: .01em; text-wrap: balance; line-height: 1.1; }
+  .stars { display: flex; align-items: center; gap: 6px; background: var(--card); border-radius: 999px; padding: 6px 14px 6px 10px; box-shadow: 0 4px 0 var(--shadow);
+    font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; font-variant-numeric: tabular-nums; min-width: 76px; justify-content: center; }
+  .stars.bump { animation: pop .4s ease; }
+
+  .chunky { border: 0; border-radius: 24px; background: var(--card); color: var(--ink); box-shadow: 0 7px 0 var(--shadow);
+    transition: transform .08s ease, box-shadow .08s ease, opacity .2s; cursor: pointer; position: relative; }
+  .chunky:active, .chunky.pressed { transform: translateY(6px); box-shadow: 0 1px 0 var(--shadow); }
+  .icon-btn { width: 56px; height: 56px; font-size: 26px; border-radius: 18px; display: grid; place-items: center; }
+
+  #screen { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .screen { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; animation: fadein .25s ease; }
+
+  .hello { margin: 0; text-align: center; color: var(--ink-soft); font-size: clamp(15px, 3.6vw, 18px); }
+  .topics { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(2, 1fr); grid-auto-rows: 1fr; gap: 12px; overflow-y: auto; padding: 4px 2px 10px; }
+  @media (min-width: 560px) { .topics { grid-template-columns: repeat(4, 1fr); } }
+  .topic { --tc: #fff; background: var(--c); color: var(--tc); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px 8px; min-height: 118px; text-shadow: 0 1px 0 rgba(0,0,0,.12); }
+  .topic .pic { width: clamp(54px, 13vw, 78px); height: clamp(54px, 13vw, 78px); border-radius: 18px; background: #fff; overflow: hidden; }
+  .topic .pic img { border-radius: 0; object-fit: cover; }
+  .topic .pic .emoji { font-size: clamp(36px, 8vw, 50px); }
+  .t-en { font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: clamp(18px, 4.6vw, 24px); }
+  .t-vi { font-size: 13px; opacity: .9; font-weight: 700; }
+
+  .dots { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; }
+  .dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+  .dots i.on { background: var(--red); transform: scale(1.3); }
+
+  .card { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; border-radius: 32px; padding: 12px; width: 100%; }
+  .card .vis { display: grid; place-items: center; flex: 1; min-height: 0; width: 100%; position: relative; }
+  .pic { display: grid; place-items: center; }
+  .pic img { width: 100%; height: 100%; min-width: 0; min-height: 0; object-fit: contain; border-radius: 24px; }
+  .card .pic { position: absolute; inset: 0; margin: auto; max-width: 420px; }
+  .card .pic.bounce, .card .emoji.bounce { animation: bounce .55s cubic-bezier(.34,1.56,.64,1); }
+  .emoji { font-size: clamp(110px, 32vmin, 220px); line-height: 1.15; }
+  .swatch { width: clamp(120px, 30vmin, 210px); height: clamp(120px, 30vmin, 210px); border-radius: 50%;
+    box-shadow: inset 0 -10px 0 rgba(0,0,0,.12), 0 0 0 8px var(--paper), 0 0 0 11px var(--line); display: block; }
+  .num { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .num b { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(90px, 26vmin, 170px); line-height: 1; color: var(--sky); }
+  .num .apples { font-size: clamp(20px, 5vmin, 30px); letter-spacing: 2px; max-width: 300px; text-align: center; line-height: 1.3; }
+  .word { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(40px, 11vw, 64px); line-height: 1; color: var(--red); letter-spacing: .01em; }
+  .vi { color: var(--ink-soft); font-size: clamp(15px, 3.8vw, 19px); }
+  .hint { color: var(--ink-soft); font-size: 13px; }
+
+  .nav { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; }
+  .nav .arrow { height: 64px; font-size: 30px; }
+  .nav .speak { width: 84px; height: 84px; font-size: 40px; border-radius: 50%; background: var(--red); color: #fff; }
+
+  .modes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .mode { padding: 8px 4px; font-size: clamp(12px, 3.1vw, 16px); font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 2px; border-radius: 18px; white-space: nowrap; }
+  .mode span { font-size: 22px; }
+
+  .word.secret { color: var(--line); }
+  .heard { margin: 0; text-align: center; color: var(--ink-soft); font-size: clamp(15px, 4vw, 19px); min-height: 1.4em; }
+  .heard b { color: var(--ink); }
+  .microw { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; }
+  .microw .replay { height: 56px; font-size: 26px; }
+  .microw .skip { height: 56px; font-size: 15px; font-weight: 800; }
+  .mic { width: 96px; height: 96px; border-radius: 50%; background: var(--red); color: #fff; font-size: 44px; }
+  .mic.listening { background: var(--grass); animation: pulse 1s ease-in-out infinite; }
+  .mic:disabled { opacity: .35; cursor: default; }
+  @keyframes pulse { 0%, 100% { box-shadow: 0 7px 0 var(--shadow), 0 0 0 0 rgba(76,191,99,.55) } 50% { box-shadow: 0 7px 0 var(--shadow), 0 0 0 22px rgba(76,191,99,0) } }
+  .mode.on { background: var(--ink); color: var(--paper); }
+
+  .ask { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px 16px; border-radius: 24px; background: var(--card); box-shadow: 0 6px 0 var(--shadow); }
+  .ask .q { font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: clamp(22px, 6vw, 32px); text-wrap: balance; text-align: center; }
+  .ask .q b { color: var(--red); }
+  .ask .speak { width: 60px; height: 60px; font-size: 28px; border-radius: 50%; background: var(--red); color: #fff; flex: none; }
+  .options { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr; grid-auto-rows: 1fr; gap: 12px; }
+  @media (min-aspect-ratio: 3/4) { .options { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; } }
+  .opt { display: grid; place-items: center; padding: 10px; border-radius: 28px; min-height: 0; overflow: hidden; }
+  .opt .pic { position: absolute; inset: 8px; margin: auto; max-width: 260px; }
+  .opt .emoji { font-size: clamp(64px, 18vmin, 130px); }
+  .opt .swatch { width: clamp(70px, 17vmin, 120px); height: clamp(70px, 17vmin, 120px); }
+  .opt .num b { font-size: clamp(60px, 15vmin, 110px); }
+  .opt .num .apples { font-size: 16px; }
+  .opt.right { background: var(--good); animation: pop .45s ease; }
+  .opt.wrong { animation: shake .5s ease; opacity: .45; }
+  .progress { display: flex; justify-content: center; gap: 8px; font-size: 26px; }
+  .progress i { font-style: normal; filter: grayscale(1); opacity: .35; }
+  .progress i.on { filter: none; opacity: 1; animation: pop .4s ease; }
+
+  .board { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(2, 1fr); grid-auto-rows: 1fr; gap: 10px; perspective: 900px; }
+  @media (min-aspect-ratio: 3/4) { .board { grid-template-columns: repeat(4, 1fr); } }
+  .mcard { border: 0; background: transparent; padding: 0; position: relative; cursor: pointer; min-height: 0; border-radius: 22px; }
+  .mcard .in { position: absolute; inset: 0; transition: transform .45s cubic-bezier(.34,1.3,.64,1); transform-style: preserve-3d; }
+  .mcard.up .in { transform: rotateY(180deg); }
+  .face { position: absolute; inset: 0; border-radius: 22px; display: grid; place-items: center; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 6px 0 var(--shadow); overflow: hidden; }
+  .face.back { background: var(--grape); background-image: radial-gradient(circle, rgba(255,255,255,.35) 0 7px, transparent 8px); background-size: 26px 26px; color: #fff; font-family: 'Fredoka', sans-serif; font-size: 40px; font-weight: 700; }
+  .face.front { background: var(--card); transform: rotateY(180deg); padding: 6px; }
+  .face .pic { position: absolute; inset: 6px; }
+  .face .pic img { border-radius: 14px; }
+  .face .emoji { font-size: clamp(38px, 11vmin, 76px); }
+  .face .swatch { width: clamp(44px, 10vmin, 70px); height: clamp(44px, 10vmin, 70px); box-shadow: inset 0 -6px 0 rgba(0,0,0,.12), 0 0 0 4px var(--line); }
+  .face .num b { font-size: clamp(40px, 11vmin, 76px); }
+  .face .num .apples { display: none; }
+  .mcard.done .face.front { background: var(--good); }
+  .mcard.done { animation: pop .45s ease; }
+
+  .party { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; }
+  .party .big { font-size: clamp(90px, 28vmin, 170px); line-height: 1; animation: bounce .8s cubic-bezier(.34,1.56,.64,1); }
+  .party h2 { font-family: 'Fredoka', 'Nunito', sans-serif; font-weight: 700; font-size: clamp(34px, 9vw, 52px); margin: 0; color: var(--red); }
+  .party .earned { font-family: 'Fredoka', sans-serif; font-size: clamp(26px, 7vw, 36px); font-weight: 600; }
+  .party .row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+  .party .row .chunky { padding: 14px 22px; font-size: 18px; font-weight: 800; }
+  .party .row .primary { background: var(--red); color: #fff; }
+
+  #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
+  .install { display: none; margin: 0; text-align: center; color: var(--ink-soft); font-size: 13px; padding: 6px 10px; border-radius: 14px; background: var(--card); box-shadow: 0 3px 0 var(--shadow); }
+  .install.show { display: block; }
+
+  @keyframes bounce { 0% { transform: scale(.7) } 55% { transform: scale(1.12) } 100% { transform: scale(1) } }
+  @keyframes pop { 0% { transform: scale(1) } 40% { transform: scale(1.12) } 100% { transform: scale(1) } }
+  @keyframes shake { 0%,100% { transform: translateX(0) } 20% { transform: translateX(-12px) } 40% { transform: translateX(12px) } 60% { transform: translateX(-8px) } 80% { transform: translateX(8px) } }
+  @keyframes fadein { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <button id="back" class="chunky icon-btn" aria-label="Về trang chủ" hidden>🏠</button>
+    <div class="title" id="title">Bé học tiếng Anh</div>
+    <div class="stars" id="starBox" title="Sao bé đã đạt">⭐ <span id="starCount">0</span></div>
+  </header>
+  <main id="screen"></main>
+  <p class="install" id="installTip"></p>
+</div>
+<canvas id="confetti"></canvas>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- assets: file rời (index.html) hoặc nhúng sẵn (bundle.html) ---------- */
+  const ASSETS = window.ASSETS || null;
+  const asset = p => (ASSETS && ASSETS[p]) || p;
+
+  /* ---------- data ---------- */
+  const TOPICS = [
+    { id: 'animals', en: 'Animals', vi: 'Động vật', icon: '🐶', cover: 'dog', c: 'var(--grass)', words: [
+      ['dog', '🐶', 'con chó'], ['cat', '🐱', 'con mèo'], ['cow', '🐮', 'con bò'], ['pig', '🐷', 'con heo'],
+      ['duck', '🦆', 'con vịt'], ['fish', '🐟', 'con cá'], ['bird', '🐦', 'con chim'], ['elephant', '🐘', 'con voi'],
+      ['lion', '🦁', 'sư tử'], ['monkey', '🐵', 'con khỉ'], ['rabbit', '🐰', 'con thỏ'], ['frog', '🐸', 'con ếch']] },
+    { id: 'fruits', en: 'Fruits', vi: 'Trái cây', icon: '🍎', cover: 'apple', c: 'var(--red)', words: [
+      ['apple', '🍎', 'quả táo'], ['banana', '🍌', 'quả chuối'], ['orange', '🍊', 'quả cam'], ['grapes', '🍇', 'chùm nho'],
+      ['watermelon', '🍉', 'dưa hấu'], ['strawberry', '🍓', 'dâu tây'], ['pineapple', '🍍', 'quả dứa'], ['mango', '🥭', 'quả xoài'],
+      ['pear', '🍐', 'quả lê'], ['cherry', '🍒', 'quả anh đào']] },
+    { id: 'colors', en: 'Colors', vi: 'Màu sắc', icon: '🎨', c: 'var(--grape)', kind: 'color', words: [
+      ['red', '#FF3B30', 'màu đỏ'], ['blue', '#1E7CF5', 'màu xanh dương'], ['yellow', '#FFD60A', 'màu vàng'], ['green', '#34C759', 'màu xanh lá'],
+      ['orange', '#FF9500', 'màu cam'], ['purple', '#9B59F5', 'màu tím'], ['pink', '#FF6FB5', 'màu hồng'], ['brown', '#8B5A2B', 'màu nâu'],
+      ['black', '#1C1C1E', 'màu đen'], ['white', '#FFFFFF', 'màu trắng']] },
+    { id: 'numbers', en: 'Numbers', vi: 'Số đếm', icon: '🔢', c: 'var(--sky)', kind: 'num', words: [
+      ['one', 1, 'số một'], ['two', 2, 'số hai'], ['three', 3, 'số ba'], ['four', 4, 'số bốn'], ['five', 5, 'số năm'],
+      ['six', 6, 'số sáu'], ['seven', 7, 'số bảy'], ['eight', 8, 'số tám'], ['nine', 9, 'số chín'], ['ten', 10, 'số mười']] },
+    { id: 'body', en: 'My Body', vi: 'Cơ thể', icon: '👋', cover: 'hand', c: 'var(--tangerine)', words: [
+      ['eye', '👁️', 'mắt'], ['nose', '👃', 'mũi'], ['mouth', '👄', 'miệng'], ['ear', '👂', 'tai'], ['hand', '✋', 'bàn tay'],
+      ['foot', '🦶', 'bàn chân'], ['tooth', '🦷', 'răng'], ['leg', '🦵', 'chân'], ['tongue', '👅', 'lưỡi'], ['arm', '💪', 'cánh tay']] },
+    { id: 'family', en: 'Family', vi: 'Gia đình', icon: '👨‍👩‍👧', cover: 'baby', c: 'var(--pink)', words: [
+      ['mommy', '👩', 'mẹ'], ['daddy', '👨', 'bố'], ['baby', '👶', 'em bé'], ['grandma', '👵', 'bà'], ['grandpa', '👴', 'ông'],
+      ['sister', '👧', 'chị / em gái'], ['brother', '👦', 'anh / em trai']] },
+    { id: 'vehicles', en: 'Vehicles', vi: 'Xe cộ', icon: '🚗', cover: 'car', c: 'var(--teal)', words: [
+      ['car', '🚗', 'ô tô'], ['bus', '🚌', 'xe buýt'], ['bike', '🚲', 'xe đạp'], ['train', '🚆', 'tàu hỏa'], ['plane', '✈️', 'máy bay'],
+      ['boat', '⛵', 'thuyền'], ['truck', '🚚', 'xe tải'], ['rocket', '🚀', 'tên lửa'], ['motorbike', '🏍️', 'xe máy']] },
+    { id: 'things', en: 'Things', vi: 'Đồ vật', icon: '🧸', cover: 'teddy bear', c: 'var(--sun)', tc: '#2B2350', words: [
+      ['ball', '⚽', 'quả bóng'], ['book', '📖', 'quyển sách'], ['hat', '🎩', 'cái mũ'], ['shoes', '👟', 'đôi giày'], ['bed', '🛏️', 'cái giường'],
+      ['chair', '🪑', 'cái ghế'], ['clock', '⏰', 'đồng hồ'], ['umbrella', '☂️', 'cái ô'], ['bag', '🎒', 'cái cặp'], ['teddy bear', '🧸', 'gấu bông']] }
+  ];
+  const fileKey = s => s.replace(/ /g, '_');
+  TOPICS.forEach(t => { t.words = t.words.map(w => ({ en: w[0], val: w[1], vi: w[2], kind: t.kind || 'emoji', topic: t.id, key: fileKey(w[0]) })); });
+
+  const PRAISE_N = 8;
+  const QUIZ_ROUNDS = 5;
+  const MEMORY_PAIRS = 4;
+
+  /* ---------- state ---------- */
+  const state = { topic: null, idx: 0, stars: 0, mode: 'learn' };
+  try { state.stars = parseInt(localStorage.getItem('bhta_stars') || '0', 10) || 0; } catch (e) {}
+
+  const $ = s => document.querySelector(s);
+  const screen = $('#screen'), titleEl = $('#title'), backBtn = $('#back'), starCount = $('#starCount'), starBox = $('#starBox');
+
+  /* ---------- audio: mp3 giọng neural, fallback speechSynthesis ---------- */
+  const player = new Audio();
+  player.preload = 'auto';
+  let queue = [], playing = false, unlocked = false;
+  const SILENT = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABJbmZvAAAADwAAAAIAAAGAAICAgICAgICAgICAgICAgICAgICAgICAgICAgP////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYDOjSGYAAAAAAAAAAAAAAAAAAAA//sQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
+  function unlock() {
+    if (unlocked) return; unlocked = true;
+    try { player.src = SILENT; player.play().catch(() => {}); } catch (e) {}
+    try { if (window.speechSynthesis) speechSynthesis.getVoices(); } catch (e) {}
+  }
+  document.addEventListener('pointerdown', unlock, { capture: true, once: true });
+  document.addEventListener('touchstart', unlock, { capture: true, once: true });
+
+  let voice = null;
+  const hasSpeech = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+  function pickVoice() {
+    const en = speechSynthesis.getVoices().filter(v => /^en[-_]/i.test(v.lang));
+    const pref = ['Samantha', 'Google US English', 'Aria', 'Jenny', 'Ava', 'Allison', 'Zira', 'Karen', 'Natural'];
+    voice = en.find(v => pref.some(p => v.name.includes(p))) || en.find(v => /US/i.test(v.lang)) || en[0] || null;
+  }
+  if (hasSpeech) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+  function tts(text, done) {
+    if (!hasSpeech) { done(); return; }
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; if (voice) u.voice = voice; u.rate = 0.82; u.pitch = 1.1;
+    u.onend = done; u.onerror = done;
+    speechSynthesis.speak(u);
+    setTimeout(done, 4000);
+  }
+
+  // clip = { f: 'w_dog', t: 'dog' } ; chuỗi clip phát nối tiếp
+  function next() {
+    if (!queue.length) { playing = false; return; }
+    playing = true;
+    const c = queue.shift();
+    let finished = false;
+    const done = () => { if (finished) return; finished = true; player.onended = player.onerror = null; setTimeout(next, c.gap || 120); };
+    const src = asset('audio/' + c.f + '.mp3');
+    if (!src || (!ASSETS && !src)) { tts(c.t, done); return; }
+    player.onended = done;
+    player.onerror = () => tts(c.t, done);
+    try {
+      player.src = src;
+      const p = player.play();
+      if (p && p.catch) p.catch(() => tts(c.t, done));
+    } catch (e) { tts(c.t, done); }
+  }
+  function say(clips, opts) {
+    opts = opts || {};
+    queue = [].concat(clips);
+    if (hasSpeech) speechSynthesis.cancel();
+    if (playing) { try { player.pause(); } catch (e) {} player.onended = player.onerror = null; playing = false; }
+    if (opts.delay) setTimeout(next, opts.delay); else next();
+  }
+  const clipWord = w => ({ f: 'w_' + w.key, t: w.en });
+  const clipFind = w => ({ f: 'find_' + w.key, t: askSpeech(w) });
+  const clipThats = w => ({ f: 'thats_' + w.key, t: "That's " + w.en + '.' });
+  const clipPraise = () => { const i = Math.floor(Math.random() * PRAISE_N); return { f: 'praise_' + i, t: ['Great job!', 'Well done!', 'Excellent!', 'You did it!', 'Awesome!', 'Super!', 'Wonderful!', 'Yay!'][i] }; };
+
+  /* ---------- sound effects ---------- */
+  let actx = null;
+  function tone(seq) {
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      if (actx.state === 'suspended') actx.resume();
+      const t0 = actx.currentTime;
+      seq.forEach(([f, d, at]) => {
+        const o = actx.createOscillator(), g = actx.createGain();
+        o.type = 'triangle'; o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, t0 + at);
+        g.gain.exponentialRampToValueAtTime(0.2, t0 + at + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + at + d);
+        o.connect(g).connect(actx.destination);
+        o.start(t0 + at); o.stop(t0 + at + d + 0.05);
+      });
+    } catch (e) {}
+  }
+  const sfxGood = () => tone([[523, .18, 0], [659, .18, .13], [784, .35, .26]]);
+  const sfxBad = () => tone([[220, .22, 0], [185, .3, .16]]);
+  const sfxTap = () => tone([[740, .09, 0]]);
+  const sfxWin = () => tone([[523, .15, 0], [659, .15, .12], [784, .15, .24], [1047, .5, .36]]);
+
+  /* ---------- confetti ---------- */
+  const canvas = $('#confetti'), ctx = canvas.getContext('2d');
+  let parts = [], raf = null;
+  function resize() { canvas.width = innerWidth * devicePixelRatio; canvas.height = innerHeight * devicePixelRatio; }
+  addEventListener('resize', resize); resize();
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function confetti(n) {
+    if (reduced) return;
+    const cols = ['#FF5A3C', '#3FA9F5', '#4CBF63', '#9B6BF2', '#FFC529', '#FF7EB6'];
+    const W = canvas.width, H = canvas.height, dpr = devicePixelRatio;
+    for (let i = 0; i < (n || 80); i++) {
+      parts.push({ x: W / 2 + (Math.random() - .5) * W * .4, y: H * .45, vx: (Math.random() - .5) * 14 * dpr, vy: (-6 - Math.random() * 10) * dpr,
+        r: (4 + Math.random() * 5) * dpr, c: cols[i % cols.length], a: Math.random() * Math.PI, va: (Math.random() - .5) * .3, life: 90 + Math.random() * 40 });
+    }
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+  function tick() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    parts = parts.filter(p => p.life > 0);
+    parts.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.vy += .35 * devicePixelRatio; p.vx *= .99; p.a += p.va; p.life--;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.globalAlpha = Math.min(1, p.life / 30);
+      ctx.fillRect(-p.r, -p.r * .6, p.r * 2, p.r * 1.2); ctx.restore();
+    });
+    if (parts.length) raf = requestAnimationFrame(tick); else { raf = null; ctx.clearRect(0, 0, canvas.width, canvas.height); }
+  }
+
+  /* ---------- helpers ---------- */
+  function addStars(n) {
+    state.stars += n;
+    try { localStorage.setItem('bhta_stars', String(state.stars)); } catch (e) {}
+    starCount.textContent = state.stars;
+    starBox.classList.remove('bump'); void starBox.offsetWidth; starBox.classList.add('bump');
+  }
+  const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  function visual(w) {
+    if (w.kind === 'color') return '<span class="swatch" style="background:' + w.val + '"></span>';
+    if (w.kind === 'num') return '<span class="num"><b>' + w.val + '</b><span class="apples">' + '🍎'.repeat(w.val) + '</span></span>';
+    return '<span class="pic" data-emoji="' + w.val + '"><img src="' + asset('img/' + w.key + '.webp') + '" alt="' + esc(w.en) + '" draggable="false"></span>';
+  }
+  // ảnh lỗi/thiếu -> hiện emoji thay thế
+  document.addEventListener('error', e => {
+    const img = e.target;
+    if (!(img instanceof HTMLImageElement)) return;
+    const pic = img.closest('.pic'); if (!pic) return;
+    pic.innerHTML = '<span class="emoji">' + (pic.dataset.emoji || '❓') + '</span>';
+  }, true);
+  function askText(w) {
+    if (w.kind === 'color' || w.topic === 'family') return 'Find <b>' + esc(w.en) + '</b>!';
+    if (w.kind === 'num') return 'Find number <b>' + esc(w.en) + '</b>!';
+    return 'Find the <b>' + esc(w.en) + '</b>!';
+  }
+  function askSpeech(w) {
+    if (w.kind === 'color' || w.topic === 'family') return 'Find ' + w.en + '!';
+    if (w.kind === 'num') return 'Find number ' + w.en + '!';
+    return 'Find the ' + w.en + '!';
+  }
+  function setHeader(title, showBack) { titleEl.textContent = title; backBtn.hidden = !showBack; }
+
+  /* ---------- home ---------- */
+  function renderHome() {
+    state.topic = null;
+    setHeader('Bé học tiếng Anh', false);
+    screen.innerHTML = '<section class="screen">' +
+      '<p class="hello">Bé chạm vào chủ đề để bắt đầu 👇</p>' +
+      '<div class="topics">' + TOPICS.map((t, i) =>
+        '<button class="chunky topic" data-i="' + i + '" style="--c:' + t.c + (t.tc ? ';--tc:' + t.tc : '') + '">' +
+        (t.cover ? '<span class="pic" data-emoji="' + t.icon + '"><img src="' + asset('img/' + fileKey(t.cover) + '.webp') + '" alt="" draggable="false"></span>'
+                 : '<span class="pic"><span class="emoji">' + t.icon + '</span></span>') +
+        '<span class="t-en">' + t.en + '</span><span class="t-vi">' + t.vi + '</span></button>').join('') +
+      '</div></section>';
+    screen.querySelectorAll('.topic').forEach(b => b.addEventListener('click', () => {
+      sfxTap();
+      state.topic = TOPICS[+b.dataset.i]; state.idx = 0; state.mode = 'learn';
+      renderLearn(true);
+    }));
+  }
+
+  /* ---------- learn ---------- */
+  function modesHtml(on) {
+    const m = [['learn', '📖', 'Học'], ['quiz', '🎯', 'Nghe & chọn'], ['speak', '🎤', 'Nói'], ['memory', '🃏', 'Ghép đôi']];
+    return '<div class="modes">' + m.map(x => '<button class="chunky mode' + (x[0] === on ? ' on' : '') + '" data-mode="' + x[0] + '"><span>' + x[1] + '</span>' + x[2] + '</button>').join('') + '</div>';
+  }
+  function bindModes() {
+    screen.querySelectorAll('.mode').forEach(b => b.addEventListener('click', () => {
+      const m = b.dataset.mode; if (m === state.mode) return;
+      sfxTap(); state.mode = m;
+      if (m === 'learn') renderLearn(); else if (m === 'quiz') startQuiz(); else if (m === 'speak') startSpeak(); else startMemory();
+    }));
+  }
+
+  function renderLearn(sayTopic) {
+    const t = state.topic;
+    setHeader(t.icon + ' ' + t.en, true);
+    screen.innerHTML = '<section class="screen">' +
+      '<div class="dots" id="dots"></div>' +
+      '<button class="chunky card" id="card"><span class="vis" id="vis"></span><span class="word" id="word"></span><span class="vi" id="viTxt"></span><span class="hint">Chạm vào hình để nghe lại 🔊</span></button>' +
+      '<div class="nav"><button class="chunky arrow" id="prev" aria-label="Từ trước">◀</button><button class="chunky speak" id="speak" aria-label="Nghe">🔊</button><button class="chunky arrow" id="next" aria-label="Từ tiếp">▶</button></div>' +
+      modesHtml('learn') + '</section>';
+    bindModes();
+    const cur = () => t.words[state.idx];
+    const show = (clips) => {
+      const w = cur();
+      $('#vis').innerHTML = visual(w);
+      $('#word').textContent = w.en;
+      $('#viTxt').textContent = w.vi;
+      $('#dots').innerHTML = t.words.map((_, i) => '<i class="' + (i === state.idx ? 'on' : '') + '"></i>').join('');
+      if (clips) say(clips);
+    };
+    const bounce = () => { const e = $('#vis').firstElementChild; if (!e) return; e.classList.remove('bounce'); void e.offsetWidth; e.classList.add('bounce'); };
+    $('#card').addEventListener('click', () => { say([clipWord(cur())]); bounce(); });
+    $('#speak').addEventListener('click', () => { say([clipWord(cur())]); bounce(); });
+    $('#next').addEventListener('click', () => { sfxTap(); state.idx = (state.idx + 1) % t.words.length; show([clipWord(cur())]); bounce(); });
+    $('#prev').addEventListener('click', () => { sfxTap(); state.idx = (state.idx - 1 + t.words.length) % t.words.length; show([clipWord(cur())]); bounce(); });
+    show(sayTopic ? [{ f: 'topic_' + t.id, t: t.en + '!' }, clipWord(cur())] : [clipWord(cur())]);
+    bounce();
+  }
+
+  /* ---------- quiz: listen & tap ---------- */
+  function startQuiz() {
+    const t = state.topic;
+    setHeader('🎯 ' + t.en, true);
+    const order = shuffle(t.words).slice(0, QUIZ_ROUNDS);
+    let round = 0, earned = 0, locked = false;
+    screen.innerHTML = '<section class="screen">' +
+      '<div class="progress" id="prog"></div>' +
+      '<div class="ask"><button class="chunky speak" id="again" aria-label="Nghe lại">🔊</button><div class="q" id="q"></div></div>' +
+      '<div class="options" id="opts"></div>' +
+      modesHtml('quiz') + '</section>';
+    bindModes();
+    $('#again').addEventListener('click', () => say([clipFind(order[round])]));
+
+    function renderRound() {
+      locked = false;
+      const target = order[round];
+      const others = shuffle(t.words.filter(w => w.en !== target.en)).slice(0, 2);
+      const opts = shuffle([target].concat(others));
+      $('#prog').innerHTML = order.map((_, i) => '<i class="' + (i < round ? 'on' : '') + '">⭐</i>').join('');
+      $('#q').innerHTML = askText(target);
+      $('#opts').innerHTML = opts.map(w => '<button class="chunky opt" data-en="' + esc(w.en) + '">' + visual(w) + '</button>').join('');
+      say([clipFind(target)], { delay: 350 });
+      screen.querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => {
+        if (locked) return;
+        const w = t.words.find(x => x.en === b.dataset.en);
+        if (w.en === target.en) {
+          locked = true; earned++;
+          b.classList.add('right'); sfxGood(); confetti(70); addStars(1);
+          say([clipWord(w), clipPraise()], { delay: 150 });
+          round++;
+          setTimeout(() => round < order.length ? renderRound() : celebrate(earned + 3, startQuiz), 2200);
+        } else {
+          b.classList.add('wrong'); sfxBad();
+          say([clipThats(w), clipFind(target)], { delay: 150 });
+        }
+      }));
+    }
+    renderRound();
+  }
+
+  /* ---------- memory: match pairs ---------- */
+  function startMemory() {
+    const t = state.topic;
+    setHeader('🃏 ' + t.en, true);
+    const chosen = shuffle(t.words).slice(0, MEMORY_PAIRS);
+    const deck = shuffle(chosen.concat(chosen).map((w, i) => ({ w: w, id: i })));
+    let open = [], matched = 0, locked = false, earned = 0;
+    screen.innerHTML = '<section class="screen">' +
+      '<p class="hello">Lật 2 thẻ giống nhau nhé! 🧠</p>' +
+      '<div class="board" id="board">' + deck.map((d, i) =>
+        '<button class="mcard" data-i="' + i + '" aria-label="Thẻ"><span class="in"><span class="face back">?</span><span class="face front">' + visual(d.w) + '</span></span></button>').join('') +
+      '</div>' + modesHtml('memory') + '</section>';
+    bindModes();
+    screen.querySelectorAll('.mcard').forEach(b => b.addEventListener('click', () => {
+      if (locked || b.classList.contains('up')) return;
+      const d = deck[+b.dataset.i];
+      b.classList.add('up'); sfxTap(); say([clipWord(d.w)]);
+      open.push(b);
+      if (open.length < 2) return;
+      locked = true;
+      const [a, c] = open; open = [];
+      if (deck[+a.dataset.i].w.en === deck[+c.dataset.i].w.en) {
+        setTimeout(() => {
+          a.classList.add('done'); c.classList.add('done');
+          sfxGood(); confetti(40); addStars(1); earned++; matched++;
+          say([clipWord(d.w), clipPraise()], { delay: 100 });
+          locked = false;
+          if (matched === MEMORY_PAIRS) setTimeout(() => celebrate(earned + 3, startMemory), 1600);
+        }, 500);
+      } else {
+        setTimeout(() => { a.classList.remove('up'); c.classList.remove('up'); locked = false; }, 1100);
+      }
+    }));
+  }
+
+  /* ---------- speak: app hỏi, bé trả lời bằng tiếng Anh qua micro ---------- */
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+  const ALIASES = {
+    dog: ['dog', 'doggy', 'puppy'], cat: ['cat', 'kitty', 'kitten'], pig: ['pig', 'piggy'], duck: ['duck', 'ducky'], rabbit: ['rabbit', 'bunny'],
+    bird: ['bird', 'birdie'], mouth: ['mouth', 'lips'], eye: ['eye', 'eyes', 'i'], ear: ['ear', 'ears', 'year'], hand: ['hand', 'hands'],
+    foot: ['foot', 'feet'], tooth: ['tooth', 'teeth'], leg: ['leg', 'legs'], arm: ['arm', 'arms'],
+    mommy: ['mommy', 'mom', 'mum', 'mummy', 'mama', 'mother'], daddy: ['daddy', 'dad', 'papa', 'father'],
+    grandma: ['grandma', 'grandmother', 'granny', 'nana'], grandpa: ['grandpa', 'grandfather', 'granddad', 'grandad'],
+    bike: ['bike', 'bicycle'], plane: ['plane', 'airplane', 'aeroplane'], boat: ['boat', 'sailboat', 'ship'], motorbike: ['motorbike', 'motorcycle', 'motor bike'],
+    bag: ['bag', 'backpack', 'schoolbag'], hat: ['hat', 'cap'], shoes: ['shoes', 'shoe', 'sneakers'], grapes: ['grapes', 'grape'], cherry: ['cherry', 'cherries'],
+    'teddy bear': ['teddy bear', 'teddy', 'bear'], ball: ['ball', 'football', 'soccer ball'],
+    one: ['one', '1', 'won'], two: ['two', '2', 'to', 'too'], three: ['three', '3', 'tree', 'free'], four: ['four', '4', 'for'], five: ['five', '5'],
+    six: ['six', '6'], seven: ['seven', '7'], eight: ['eight', '8', 'ate'], nine: ['nine', '9'], ten: ['ten', '10'],
+    red: ['red', 'read'], blue: ['blue', 'blew'], white: ['white', 'wide'], brown: ['brown', 'braun']
+  };
+  function lev(a, b) {
+    const m = a.length, n = b.length; if (!m) return n; if (!n) return m;
+    let prev = Array.from({ length: n + 1 }, (_, i) => i);
+    for (let i = 1; i <= m; i++) { const cur = [i]; for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = cur; }
+    return prev[n];
+  }
+  function heardMatch(w, alts) {
+    const cands = ALIASES[w.en] || [w.en];
+    return alts.some(a => {
+      const s = a.replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+      const words = s.split(' ');
+      return cands.some(c => c.includes(' ') ? s.includes(c) : words.some(x => x === c || (c.length >= 4 && lev(x, c) <= 1)));
+    });
+  }
+  function questionClip(w) {
+    if (w.kind === 'color') return { f: 'q_color', t: 'What color is this?' };
+    if (w.kind === 'num') return { f: 'q_number', t: 'What number is this?' };
+    if (w.topic === 'family') return { f: 'q_who', t: 'Who is this?' };
+    return { f: 'q_what', t: 'What is this?' };
+  }
+
+  function startSpeak() {
+    const t = state.topic;
+    setHeader('🎤 ' + t.en, true);
+    const order = shuffle(t.words).slice(0, QUIZ_ROUNDS);
+    let round = 0, earned = 0, fails = 0, locked = false, rec = null;
+    screen.innerHTML = '<section class="screen">' +
+      '<div class="progress" id="prog"></div>' +
+      '<button class="chunky card" id="card"><span class="vis" id="vis"></span><span class="word secret" id="word">?</span><span class="hint" id="hint"></span></button>' +
+      '<p class="heard" id="heard"></p>' +
+      '<div class="microw"><button class="chunky replay" id="replay" aria-label="Nghe lại câu hỏi">🔊</button><button class="chunky mic" id="mic" aria-label="Bấm rồi nói">🎤</button><button class="chunky skip" id="skip">Bỏ qua ▶</button></div>' +
+      modesHtml('speak') + '</section>';
+    bindModes();
+    const mic = $('#mic'), heard = $('#heard'), hint = $('#hint'), wordEl = $('#word');
+    if (!SR) { mic.disabled = true; heard.innerHTML = 'Máy này chưa hỗ trợ nghe giọng nói. Mở app bằng <b>Safari</b> (iPhone) hoặc <b>Chrome</b> nhé.'; }
+    const cur = () => order[round];
+    const alive = () => document.body.contains(mic);
+    function ask(first) {
+      const w = cur(); fails = 0; locked = false;
+      $('#prog').innerHTML = order.map((_, i) => '<i class="' + (i < round ? 'on' : '') + '">⭐</i>').join('');
+      $('#vis').innerHTML = visual(w);
+      wordEl.textContent = '?'; wordEl.classList.add('secret');
+      hint.textContent = 'Bấm micro 🎤 rồi nói tiếng Anh';
+      heard.textContent = '';
+      say([questionClip(w)], { delay: first ? 300 : 200 });
+    }
+    function reveal() { wordEl.textContent = cur().en; wordEl.classList.remove('secret'); }
+    function advance() { if (!alive()) return; round++; if (round < order.length) ask(); else celebrate(earned + 3, startSpeak); }
+    function onHeard(alts) {
+      if (!alive() || locked) return;
+      const w = cur();
+      heard.innerHTML = 'Bé nói: <b>' + esc(alts[0] || '…') + '</b>';
+      if (heardMatch(w, alts)) {
+        locked = true; earned++; sfxGood(); confetti(70); addStars(1); reveal();
+        hint.textContent = 'Đúng rồi! 🎉';
+        say([clipWord(w), clipPraise()], { delay: 150 });
+        setTimeout(advance, 2300);
+      } else {
+        fails++; sfxBad(); reveal();
+        say([{ f: 'notquite', t: 'Not quite. Listen and repeat:' }, clipWord(w)], { delay: 150 });
+        hint.textContent = fails >= 2 ? 'Bé nói lại "' + w.en + '" hoặc bấm Bỏ qua' : 'Nghe rồi nói lại nhé!';
+      }
+    }
+    function listen() {
+      if (!SR || locked || rec) return;
+      say([]);
+      try {
+        rec = new SR(); rec.lang = 'en-US'; rec.interimResults = false; rec.maxAlternatives = 5; rec.continuous = false;
+        rec.onresult = e => {
+          const alts = [];
+          for (let r = 0; r < e.results.length; r++) for (let i = 0; i < e.results[r].length; i++) alts.push(String(e.results[r][i].transcript || '').toLowerCase().trim());
+          onHeard(alts);
+        };
+        rec.onerror = e => {
+          if (!alive()) return;
+          const k = e.error;
+          if (k === 'not-allowed' || k === 'service-not-allowed') heard.innerHTML = 'Cần cho phép dùng <b>micro</b> cho trang này.';
+          else if (k === 'no-speech') { heard.textContent = 'Chưa nghe thấy gì, bé nói to hơn nhé!'; say([{ f: 'louder', t: "I didn't hear you. Say it louder!" }]); }
+          else if (k !== 'aborted') heard.textContent = 'Không nghe được, thử lại nhé.';
+        };
+        rec.onend = () => { rec = null; mic.classList.remove('listening'); };
+        rec.start();
+        mic.classList.add('listening'); heard.textContent = 'Đang nghe… 👂'; sfxTap();
+      } catch (e) { rec = null; mic.classList.remove('listening'); heard.textContent = 'Không mở được micro.'; }
+    }
+    mic.addEventListener('click', listen);
+    $('#replay').addEventListener('click', () => say([questionClip(cur())]));
+    $('#card').addEventListener('click', () => say([questionClip(cur())]));
+    $('#skip').addEventListener('click', () => {
+      if (locked) return; locked = true;
+      if (rec) { try { rec.abort(); } catch (e) {} }
+      sfxTap(); reveal(); say([clipWord(cur())]);
+      setTimeout(advance, 1000);
+    });
+    ask(true);
+  }
+
+  /* ---------- celebrate ---------- */
+  function celebrate(bonusTotal, replay) {
+    addStars(3);
+    sfxWin(); confetti(160);
+    say([{ f: 'hooray', t: 'Hooray! You did it!' }, clipPraise()], { delay: 250 });
+    screen.innerHTML = '<section class="screen"><div class="party">' +
+      '<div class="big">🎉</div><h2>Giỏi quá!</h2>' +
+      '<div class="earned">+' + bonusTotal + ' ⭐</div>' +
+      '<div class="vi">Bé đã hoàn thành ' + esc(state.topic.en) + ' 👏</div>' +
+      '<div class="row"><button class="chunky primary" id="replay">🔁 Chơi lại</button><button class="chunky" id="learnMore">📖 Học tiếp</button><button class="chunky" id="home">🏠 Chủ đề khác</button></div>' +
+      '</div></section>';
+    $('#replay').addEventListener('click', () => { sfxTap(); replay(); });
+    $('#learnMore').addEventListener('click', () => { sfxTap(); state.mode = 'learn'; renderLearn(); });
+    $('#home').addEventListener('click', () => { sfxTap(); renderHome(); });
+  }
+
+  /* ---------- PWA: service worker + gợi ý cài lên màn hình chính ---------- */
+  (function pwa() {
+    const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const httpOk = /^https?:$/.test(location.protocol) && !ASSETS;
+    if ('serviceWorker' in navigator && httpOk) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+    const tip = $('#installTip');
+    if (!standalone && isIOS && !localStorage.getItem('bhta_tip')) {
+      tip.innerHTML = 'Cài lên iPhone: bấm nút <b>Chia sẻ</b> ⬆️ rồi chọn <b>Thêm vào MH chính</b>. <u>Ẩn</u>';
+      tip.classList.add('show');
+      tip.addEventListener('click', () => { tip.classList.remove('show'); try { localStorage.setItem('bhta_tip', '1'); } catch (e) {} });
+    }
+  })();
+
+  /* ---------- boot ---------- */
+  backBtn.addEventListener('click', () => { sfxTap(); say([]); renderHome(); });
+  starCount.textContent = state.stars;
+  renderHome();
+})();
+</script>
+</body>
+</html>
