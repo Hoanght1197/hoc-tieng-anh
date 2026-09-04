@@ -13,7 +13,6 @@
     <h3>⚙️ Cài đặt</h3>
     <div class="set"><span>Giọng tiếng Anh</span><div class="seg" data-k="voice"><button data-v="aria">Cô Aria</button><button data-v="ana">Bạn Ana</button></div></div>
     <div class="set"><span>Tốc độ đọc</span><div class="seg" data-k="rate"><button data-v="0.75">Chậm</button><button data-v="0.9">Vừa</button><button data-v="1.05">Nhanh</button></div></div>
-    <div class="set"><span>Cô hướng dẫn tiếng Việt</span><div class="seg" data-k="vi"><button data-v="1">Bật</button><button data-v="0">Tắt</button></div></div>
     <div class="dlg-actions"><button class="chunky" id="tryVoice">🔊 Nghe thử</button><button class="chunky primary" id="closeDlg">Xong</button></div>
   </div>
 </div>
@@ -72,7 +71,7 @@
   const screen = $('#screen'), titleEl = $('#title'), backBtn = $('#back'), starCount = $('#starCount'), starBox = $('#starBox');
 
   /* ---------- cài đặt (lưu trên máy) ---------- */
-  const cfg = { voice: 'aria', rate: 0.9, vi: true };
+  const cfg = { voice: 'aria', rate: 0.9 };
   try { Object.assign(cfg, JSON.parse(localStorage.getItem('bhta_cfg') || '{}')); } catch (e) {}
   function saveCfg() { try { localStorage.setItem('bhta_cfg', JSON.stringify(cfg)); } catch (e) {} }
 
@@ -102,7 +101,7 @@
     } catch (e) { done(); }
   }
   const isVi = c => c.f.indexOf('vi/') === 0;
-  const clipSrc = c => asset(isVi(c) ? 'audio/' + c.f + '.mp3' : 'audio/' + cfg.voice + '/' + c.f + '.mp3');
+  const clipSrc = c => asset('audio/' + cfg.voice + '/' + c.f + '.mp3');
   function next(myGen) {
     if (myGen !== gen || !queue.length) return;
     const c = queue.shift();
@@ -112,7 +111,7 @@
       finished = true; player.onended = player.onerror = null;
       setTimeout(() => next(myGen), c.gap || 150);
     };
-    const fallback = () => { if (myGen !== gen || finished) return; tts(c.t, isVi(c) ? 'vi-VN' : 'en-US', done); };
+    const fallback = () => { if (myGen !== gen || finished) return; tts(c.t, 'en-US', done); };
     player.onended = done;
     player.onerror = () => { if (player.error && player.error.code === 1) return; fallback(); };
     try {
@@ -134,14 +133,13 @@
     player.onended = player.onerror = null;
     try { player.pause(); } catch (e) {}
     if (hasSpeech) { try { speechSynthesis.cancel(); } catch (e) {} }
-    queue = [].concat(clips).filter(c => c && (cfg.vi || !isVi(c)));
+    queue = [].concat(clips).filter(Boolean);
     if (!queue.length) return;
     if (opts.delay) setTimeout(() => next(myGen), opts.delay); else next(myGen);
   }
   const clipWord = w => ({ f: 'w_' + w.key, t: w.en });
   const clipFind = w => ({ f: 'find_' + w.key, t: askSpeech(w) });
   const clipThats = w => ({ f: 'thats_' + w.key, t: "That's " + w.en + '.' });
-  const clipVi = n => ({ f: 'vi/' + n, t: '' });
   const clipPraise = () => { const i = Math.floor(Math.random() * PRAISE_N); return { f: 'praise_' + i, t: ['Great job!', 'Well done!', 'Excellent!', 'You did it!', 'Awesome!', 'Super!', 'Wonderful!', 'Yay!'][i] }; };
 
   /* ---------- sound effects ---------- */
@@ -283,7 +281,7 @@
     $('#speak').addEventListener('click', () => { say([clipWord(cur())]); bounce(); });
     $('#next').addEventListener('click', () => { sfxTap(); state.idx = (state.idx + 1) % t.words.length; show([clipWord(cur())]); bounce(); });
     $('#prev').addEventListener('click', () => { sfxTap(); state.idx = (state.idx - 1 + t.words.length) % t.words.length; show([clipWord(cur())]); bounce(); });
-    show(sayTopic ? [clipVi('topic_' + t.id), { f: 'topic_' + t.id, t: t.en + '!' }, clipWord(cur())] : [clipWord(cur())]);
+    show(sayTopic ? [{ f: 'topic_' + t.id, t: t.en + '!' }, clipWord(cur())] : [clipWord(cur())]);
     bounce();
   }
 
@@ -309,7 +307,7 @@
       $('#prog').innerHTML = order.map((_, i) => '<i class="' + (i < round ? 'on' : '') + '">⭐</i>').join('');
       $('#q').innerHTML = askText(target);
       $('#opts').innerHTML = opts.map(w => '<button class="chunky opt" data-en="' + esc(w.en) + '">' + visual(w) + '</button>').join('');
-      say((round === 0 ? [clipVi('quiz')] : []).concat([clipFind(target)]), { delay: 350 });
+      say([clipFind(target)], { delay: 350 });
       screen.querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => {
         if (locked) return;
         const w = t.words.find(x => x.en === b.dataset.en);
@@ -321,7 +319,7 @@
           setTimeout(() => round < order.length ? renderRound() : celebrate(earned + 3, startQuiz), 2200);
         } else {
           b.classList.add('wrong'); sfxBad();
-          say([clipThats(w), clipVi('wrong'), clipFind(target)], { delay: 150 });
+          say([clipThats(w), clipFind(target)], { delay: 150 });
         }
       }));
     }
@@ -341,7 +339,6 @@
         '<button class="mcard" data-i="' + i + '" aria-label="Thẻ"><span class="in"><span class="face back">?</span><span class="face front">' + visual(d.w) + '</span></span></button>').join('') +
       '</div>' + modesHtml('memory') + '</section>';
     bindModes();
-    say([clipVi('memory')], { delay: 300 });
     screen.querySelectorAll('.mcard').forEach(b => b.addEventListener('click', () => {
       if (locked || b.classList.contains('up')) return;
       const d = deck[+b.dataset.i];
@@ -423,7 +420,7 @@
       wordEl.textContent = '?'; wordEl.classList.add('secret');
       hint.textContent = 'Bấm micro 🎤 rồi nói tiếng Anh';
       heard.textContent = '';
-      say((first ? [clipVi('speak')] : []).concat([questionClip(w)]), { delay: first ? 300 : 200 });
+      say([questionClip(w)], { delay: first ? 300 : 200 });
     }
     function reveal() { wordEl.textContent = cur().en; wordEl.classList.remove('secret'); }
     function advance() { if (!alive()) return; round++; if (round < order.length) ask(); else celebrate(earned + 3, startSpeak); }
@@ -438,7 +435,7 @@
         setTimeout(advance, 2300);
       } else {
         fails++; sfxBad(); reveal();
-        say([cfg.vi ? clipVi('repeat') : { f: 'notquite', t: 'Not quite. Listen and repeat:' }, clipWord(w)], { delay: 150 });
+        say([{ f: 'notquite', t: 'Not quite. Listen and repeat:' }, clipWord(w)], { delay: 150 });
         hint.textContent = fails >= 2 ? 'Bé nói lại "' + w.en + '" hoặc bấm Bỏ qua' : 'Nghe rồi nói lại nhé!';
       }
     }
@@ -456,7 +453,7 @@
           if (!alive()) return;
           const k = e.error;
           if (k === 'not-allowed' || k === 'service-not-allowed') heard.innerHTML = 'Cần cho phép dùng <b>micro</b> cho trang này.';
-          else if (k === 'no-speech') { heard.textContent = 'Chưa nghe thấy gì, bé nói to hơn nhé!'; say([cfg.vi ? clipVi('louder') : { f: 'louder', t: "I didn't hear you. Say it louder!" }]); }
+          else if (k === 'no-speech') { heard.textContent = 'Chưa nghe thấy gì, bé nói to hơn nhé!'; say([{ f: 'louder', t: "I didn't hear you. Say it louder!" }]); }
           else if (k !== 'aborted') heard.textContent = 'Không nghe được, thử lại nhé.';
         };
         rec.onend = () => { rec = null; mic.classList.remove('listening'); };
@@ -480,7 +477,7 @@
   function celebrate(bonusTotal, replay) {
     addStars(3);
     sfxWin(); confetti(160);
-    say([{ f: 'hooray', t: 'Hooray! You did it!' }, clipPraise(), clipVi('done')], { delay: 250 });
+    say([{ f: 'hooray', t: 'Hooray! You did it!' }, clipPraise()], { delay: 250 });
     screen.innerHTML = '<section class="screen"><div class="party">' +
       '<div class="big">🎉</div><h2>Giỏi quá!</h2>' +
       '<div class="earned">+' + bonusTotal + ' ⭐</div>' +
@@ -523,19 +520,19 @@
   const dlg = $('#dlg');
   function renderSettings() {
     dlg.querySelectorAll('.seg').forEach(seg => {
-      const k = seg.dataset.k, v = k === 'vi' ? (cfg.vi ? '1' : '0') : String(cfg[k]);
+      const k = seg.dataset.k, v = String(cfg[k]);
       seg.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
     });
   }
   dlg.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
     const k = b.parentNode.dataset.k, v = b.dataset.v;
-    if (k === 'rate') cfg.rate = parseFloat(v); else if (k === 'vi') cfg.vi = v === '1'; else cfg.voice = v;
+    if (k === 'rate') cfg.rate = parseFloat(v); else cfg.voice = v;
     saveCfg(); renderSettings(); sfxTap();
   }));
   $('#gear').addEventListener('click', () => { sfxTap(); say([]); renderSettings(); dlg.hidden = false; });
   $('#closeDlg').addEventListener('click', () => { sfxTap(); dlg.hidden = true; });
   dlg.addEventListener('click', e => { if (e.target === dlg) dlg.hidden = true; });
-  $('#tryVoice').addEventListener('click', () => say([{ f: 'sample', t: "Hello! I'm your English teacher. Let's learn together!" }, clipVi('sample')]));
+  $('#tryVoice').addEventListener('click', () => say([{ f: 'sample', t: "Hello! I'm your English teacher. Let's learn together!" }]));
 
   /* ---------- boot ---------- */
   backBtn.addEventListener('click', () => { sfxTap(); say([]); renderHome(); });
