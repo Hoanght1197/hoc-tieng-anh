@@ -21,10 +21,10 @@ head, body = rd("src/head.html"), rd("src/body.html")
 os.makedirs(os.path.join(ROOT, "icons"), exist_ok=True)
 src_icon = os.path.join(ROOT, "img", "dog.webp")
 def make_icon(size, pad_ratio=0.12, out=None):
-    bg = Image.new("RGBA", (size, size), (255, 90, 60, 255))
+    bg = Image.new("RGBA", (size, size), (91, 167, 114, 255))
     d = ImageDraw.Draw(bg)
     r = int(size * 0.22)
-    d.rounded_rectangle((0, 0, size - 1, size - 1), radius=r, fill=(255, 90, 60, 255))
+    d.rounded_rectangle((0, 0, size - 1, size - 1), radius=r, fill=(91, 167, 114, 255))
     if os.path.exists(src_icon):
         im = Image.open(src_icon).convert("RGBA")
         inner = int(size * (1 - pad_ratio * 2))
@@ -44,7 +44,7 @@ print("-> icons/")
 manifest = {
     "name": "Bé Học Tiếng Anh", "short_name": "Tiếng Anh", "lang": "vi", "start_url": "./index.html",
     "scope": "./", "display": "standalone", "orientation": "portrait",
-    "background_color": "#FFF6D6", "theme_color": "#FF5A3C",
+    "background_color": "#E4F3DC", "theme_color": "#5BA772",
     "icons": [
         {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
         {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
@@ -56,7 +56,7 @@ wr("manifest.webmanifest", json.dumps(manifest, ensure_ascii=False, indent=2))
 # ---------- index.html (PWA) ----------
 PWA_HEAD = """<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<meta name="theme-color" content="#FF5A3C">
+<meta name="theme-color" content="#E4F3DC">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -71,7 +71,7 @@ wr("index.html", wrap(PWA_HEAD, head, body))
 
 # ---------- service worker: precache toàn bộ ----------
 files = ["./", "index.html", "manifest.webmanifest"]
-for pat in ("img/*.webp", "audio/*/*.mp3", "icons/*.png"):
+for pat in ("img/*.webp", "img/cut/*.webp", "img/scenes/*.webp", "audio/*/*.mp3", "icons/*.png"):
     files += sorted(p.replace(ROOT + os.sep, "").replace("\\", "/") for p in glob.glob(os.path.join(ROOT, pat)))
 h = hashlib.md5()
 for f in files:
@@ -105,7 +105,8 @@ wr("sw.js", sw)
 # app chính (index.html + file rời trên GitHub) vẫn đủ tất cả giọng.
 BUNDLE_VOICES = {"matilda", "emma"}
 assets = {}
-for p in sorted(glob.glob(os.path.join(ROOT, "img", "*.webp"))):
+for pat in ("img/*.webp", "img/cut/*.webp", "img/scenes/*.webp"):
+  for p in sorted(glob.glob(os.path.join(ROOT, pat))):
     rel = p.replace(ROOT + os.sep, "").replace("\\", "/")
     assets[rel] = "data:image/webp;base64," + base64.b64encode(open(p, "rb").read()).decode()
 for p in sorted(glob.glob(os.path.join(ROOT, "audio", "*", "*.mp3"))):
@@ -117,7 +118,7 @@ inject = "<script>window.ASSETS=" + json.dumps(assets, separators=(",", ":")) + 
 body_bundled = body.replace('<div id="app">', inject + '<div id="app">', 1)
 BUNDLE_HEAD = """<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<meta name="theme-color" content="#FF5A3C">
+<meta name="theme-color" content="#E4F3DC">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Tiếng Anh">
 """

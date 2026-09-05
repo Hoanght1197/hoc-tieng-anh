@@ -1,0 +1,25 @@
+import asyncio, time
+from playwright.async_api import async_playwright
+async def main():
+    async with async_playwright() as p:
+        b=await p.chromium.connect_over_cdp("http://127.0.0.1:9222")
+        pg=await b.contexts[0].new_page()
+        await pg.set_viewport_size({"width":390,"height":800})
+        await pg.goto("https://hoanght1197.github.io/hoc-tieng-anh/?v="+str(int(time.time())))
+        await asyncio.sleep(2)
+        await pg.evaluate("localStorage.setItem('bhta_profile', JSON.stringify({name:'Su',mascot:'cat',setup:true}))")
+        await pg.reload(); await asyncio.sleep(2)
+        await pg.screenshot(path="dist/a_home.png")
+        await pg.click(".topic >> nth=0"); await asyncio.sleep(1.2)
+        await pg.screenshot(path="dist/a_learn.png")
+        await pg.click(".mode[data-nav=play]"); await asyncio.sleep(1)
+        await pg.screenshot(path="dist/a_hub.png")
+        await pg.click(".gtile[data-g=quiz]"); await asyncio.sleep(1.5)
+        await pg.screenshot(path="dist/a_quiz.png")
+        await pg.click(".mode[data-nav=play]"); await asyncio.sleep(0.8)
+        await pg.click(".gtile[data-g=fill]"); await asyncio.sleep(1.5)
+        await pg.screenshot(path="dist/a_fill.png")
+        await pg.click("#gear"); await asyncio.sleep(0.8)
+        await pg.screenshot(path="dist/a_settings.png")
+        await pg.close(); print("ok")
+asyncio.run(main())
