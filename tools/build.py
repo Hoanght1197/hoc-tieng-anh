@@ -101,11 +101,18 @@ self.addEventListener('fetch', e => {
 wr("sw.js", sw)
 
 # ---------- bundle: nhúng ảnh + mp3 ----------
+# artifact/bundle 1 file bị giới hạn 16MB -> chỉ nhúng vài giọng cho bản xem;
+# app chính (index.html + file rời trên GitHub) vẫn đủ tất cả giọng.
+BUNDLE_VOICES = {"matilda", "emma"}
 assets = {}
-for pat, mime in (("img/*.webp", "image/webp"), ("audio/*/*.mp3", "audio/mpeg")):
-    for p in sorted(glob.glob(os.path.join(ROOT, pat))):
-        rel = p.replace(ROOT + os.sep, "").replace("\\", "/")
-        assets[rel] = "data:%s;base64,%s" % (mime, base64.b64encode(open(p, "rb").read()).decode())
+for p in sorted(glob.glob(os.path.join(ROOT, "img", "*.webp"))):
+    rel = p.replace(ROOT + os.sep, "").replace("\\", "/")
+    assets[rel] = "data:image/webp;base64," + base64.b64encode(open(p, "rb").read()).decode()
+for p in sorted(glob.glob(os.path.join(ROOT, "audio", "*", "*.mp3"))):
+    rel = p.replace(ROOT + os.sep, "").replace("\\", "/")
+    if rel.split("/")[1] not in BUNDLE_VOICES:
+        continue
+    assets[rel] = "data:audio/mpeg;base64," + base64.b64encode(open(p, "rb").read()).decode()
 inject = "<script>window.ASSETS=" + json.dumps(assets, separators=(",", ":")) + ";</script>\n"
 body_bundled = body.replace('<div id="app">', inject + '<div id="app">', 1)
 BUNDLE_HEAD = """<meta charset="utf-8">

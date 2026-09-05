@@ -5,3 +5,5 @@ tools/*.log
 .DS_Store
 Thumbs.db
 voicetest/
+img/_backup_pichbook/
+img/styletest/

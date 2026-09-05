@@ -28,9 +28,9 @@ def prompt(items):
         layout = "a square image with a clean grid of 4 equal square cells: 2 columns and 2 rows"
     order = ", ".join(f"{i+1}. {it}" for i, it in enumerate(items))
     return (f"Create {layout}, separated by thin light gray lines. Every cell has a plain pure white background. "
-            "In each cell draw exactly ONE subject, centered, large, fully visible inside the cell, in a cute, simple, friendly "
-            "children's picture-book illustration style: bold clean outlines, soft flat colors, gentle shading, no background scenery, "
-            "easy for a 4-year-old child to recognize. Absolutely no text, no letters, no numbers, no labels, no watermark. "
+            "In each cell draw exactly ONE subject, centered, large, fully visible inside the cell, in a soft 3D clay plasticine render style: "
+            "rounded matte forms, smooth soft studio lighting, gentle soft shadows, cute and friendly, clearly recognizable "
+            "for a 4-year-old child, no background scenery. Absolutely no text, no letters, no numbers, no labels, no watermark. "
             f"Order of the cells reading left to right, then top to bottom: {order}.")
 
 jobs = []

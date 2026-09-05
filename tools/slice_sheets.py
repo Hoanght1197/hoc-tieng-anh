@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-"""Cat bang 2x3 / 2x2 thanh tung hinh vuong 512px .webp, ten theo tu tieng Anh. Tu do khoang trang, pad vuong."""
-import os, sys, json
+"""Cắt bảng 2x3 / 2x2 thành từng hình vuông .webp NỀN TRẮNG (không tách nền).
+Các khung trong app đều nền sáng nên hình nền trắng hòa liền, tránh lỗi tách nền."""
+import os, sys
 from PIL import Image, ImageChops
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,20 +21,23 @@ MAP = {
 }
 SIZE = 512
 
-def autocrop(im, pad_ratio=0.08):
-    """Cat sat vien noi dung (nen trang), roi pad thanh hinh vuong nen trang."""
-    rgb = im.convert("RGB")
+def square_white(rgb, pad=0.07):
     bg = Image.new("RGB", rgb.size, (255, 255, 255))
-    diff = ImageChops.difference(rgb, bg).convert("L").point(lambda p: 255 if p > 28 else 0)
+    diff = ImageChops.difference(rgb, bg).convert("L").point(lambda p: 255 if p > 18 else 0)
     box = diff.getbbox()
     if box:
-        # bo qua duong ke luoi sat mep: thu hep bbox neu no cham mep
         rgb = rgb.crop(box)
     w, h = rgb.size
-    side = int(max(w, h) * (1 + pad_ratio * 2))
+    side = int(max(w, h) * (1 + pad * 2))
     sq = Image.new("RGB", (side, side), (255, 255, 255))
     sq.paste(rgb, ((side - w) // 2, (side - h) // 2))
     return sq.resize((SIZE, SIZE), Image.LANCZOS)
+
+def save_single(src, name):
+    """1 ảnh riêng (vd hand_new) -> img/<name>.webp nền trắng."""
+    im = Image.open(src).convert("RGB")
+    square_white(im).save(os.path.join(OUT, name + ".webp"), "WEBP", quality=90)
+    print("ok(single)", name)
 
 def slice_one(name, words):
     path = os.path.join(SHEETS, name + ".png")
@@ -43,15 +47,17 @@ def slice_one(name, words):
     W, H = im.size
     cols, rows = (2, 3) if len(words) == 6 else (2, 2)
     cw, ch = W / cols, H / rows
-    inset = 0.045  # bo mep de tranh duong ke luoi
+    inset = 0.045
     for i, w in enumerate(words):
         r, c = divmod(i, cols)
-        box = (int(c * cw + cw * inset), int(r * ch + ch * inset), int((c + 1) * cw - cw * inset), int((r + 1) * ch - ch * inset))
-        cell = autocrop(im.crop(box))
-        out = os.path.join(OUT, w + ".webp")
-        cell.save(out, "WEBP", quality=86)
-        print("ok", out)
+        box = (int(c*cw + cw*inset), int(r*ch + ch*inset), int((c+1)*cw - cw*inset), int((r+1)*ch - ch*inset))
+        square_white(im.crop(box)).save(os.path.join(OUT, w + ".webp"), "WEBP", quality=90)
+        print("ok", w)
 
-only = sys.argv[1:] or list(MAP)
-for n in only:
-    slice_one(n, MAP[n])
+if __name__ == "__main__":
+    args = sys.argv[1:]
+    if args and args[0] == "single":   # python slice_sheets.py single <src.png> <name>
+        save_single(args[1], args[2])
+    else:
+        for n in (args or list(MAP)):
+            slice_one(n, MAP[n])
